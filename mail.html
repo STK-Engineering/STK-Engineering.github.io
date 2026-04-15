@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>에스티케이엔지니어링(주) 전자 서명 생성기</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #8a8a8a;
+        color: #1f2937;
+      }
+
+      .app {
+        max-width: 1420px;
+        margin: 0 auto;
+        padding: 28px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        color: #ffffff;
+      }
+
+      .sub {
+        margin: 0 0 24px;
+        color: #ececec;
+        line-height: 1.5;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .panel {
+        background: #fff;
+        border: 1px solid #d8d8d8;
+        padding: 20px;
+      }
+
+      .panel h2 {
+        margin: 0 0 16px;
+        font-size: 18px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        font-size: 14px;
+        outline: none;
+        background: #fff;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #2c3a74;
+        box-shadow: 0 0 0 3px rgba(44, 58, 116, 0.12);
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+
+      .template-toggle {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .template-btn {
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #111827;
+        padding: 8px 12px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .template-btn.active {
+        background: #1f3a6b;
+        border-color: #1f3a6b;
+        color: #fff;
+      }
+
+      button {
+        border: 0;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .primary {
+        background: #2c4e86;
+        color: #fff;
+      }
+
+      .ghost {
+        background: #fff;
+        color: #111827;
+        border: 1px solid #d1d5db;
+      }
+
+      .hint {
+        margin-top: 14px;
+        font-size: 13px;
+        color: #6b7280;
+        line-height: 1.5;
+      }
+
+      .preview-wrap {
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        padding: 20px;
+        overflow: auto;
+        min-height: 340px;
+      }
+
+      .status {
+        margin-top: 12px;
+        min-height: 20px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .status.ok {
+        color: #15803d;
+      }
+
+      .status.err {
+        color: #b91c1c;
+      }
+
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+
+      .toolbar p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>에스티케이엔지니어링(주) 전자 서명 생성</h1>
+      <p class="sub">
+        이름, 부서, 직함, 연락처를 입력하면 오른쪽 미리보기가 바뀌고 서명 복사
+        버튼으로 Outlook 서명 편집창에 붙여넣을 수 있습니다.
+      </p>
+
+      <div class="layout">
+        <section class="panel">
+          <h2>입력 정보</h2>
+          <div class="grid">
+            <div class="field">
+              <label for="name">이름</label>
+              <input id="name" value="홍길동" />
+            </div>
+
+            <div class="field">
+              <label for="depart">부서</label>
+              <input id="depart" list="departOptions" value="IT/ISO" />
+              <datalist id="departOptions">
+                <option value="Part Sales"></option>
+                <option value="Accounting/Affairs"></option>
+                <option value="Engineering"></option>
+                <option value="Factory&amp;Material Management"></option>
+                <option value="IT/ISO"></option>
+                <option value="Service Coordination"></option>
+                <option value="Stucke Tech"></option>
+              </datalist>
+            </div>
+
+            <div class="field">
+              <label for="title">직함</label>
+              <select id="titlePicker" aria-label="직함(한글) 선택">
+                <option value="">직함 선택(한글)</option>
+                <option value="Staff">사원</option>
+                <option value="Assistant Manager">주임</option>
+                <option value="Senior Manager">대리</option>
+                <option value="Manager">과장</option>
+                <option value="Deputy General Manager">차장</option>
+                <option value="General Manager">부장</option>
+                <option value="Director">이사</option>
+                <option value="Managing Director">상무</option>
+                <option value="Senior Managing Director">전무</option>
+                <option value="CEO">대표</option>
+              </select>
+              <input id="title" value="Senior Manager" />
+            </div>
+
+            <div class="field full">
+              <label for="mobile">휴대폰</label>
+              <input id="mobile" value="010-1234-5678" />
+            </div>
+
+            <div class="field full">
+              <label for="phone">대표번호</label>
+              <input id="phone" value="+82 51 000 1179" />
+            </div>
+
+            <div class="field full">
+              <label for="email">이메일</label>
+              <input id="email" value="hong@stk-eng.com" />
+            </div>
+          </div>
+
+          <div class="template-toggle">
+            <button
+              type="button"
+              class="template-btn active"
+              data-template="type1"
+              aria-pressed="true"
+            >
+              서명란 1
+            </button>
+            <button
+              type="button"
+              class="template-btn"
+              data-template="type2"
+              aria-pressed="false"
+            >
+              서명란 2
+            </button>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="copySignatureBtn">서명 복사</button>
+            <button class="ghost" id="resetBtn">기본값으로 초기화</button>
+          </div>
+
+          <div id="status" class="status"></div>
+
+          <p class="hint">
+            로고, QR, 아이콘, 주소, 웹사이트, 하단 문구, 배경 이미지는 코드 내부
+            고정값으로 설정되어 있습니다.
+          </p>
+        </section>
+
+        <section class="panel">
+          <div class="toolbar">
+            <h2 style="margin: 0">미리보기</h2>
+            <p>이 영역이 그대로 복사됩니다.</p>
+          </div>
+
+          <div class="preview-wrap">
+            <div id="signaturePreview"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const defaults = {
+        name: "홍길동",
+        depart: "IT/ISO",
+        title: "Senior Manager",
+        mobile: "010-1234-5678",
+        phone: "+82 51 000 1179",
+        email: "hong@stk-eng.com",
+      };
+
+      const FIXED = {
+        logo: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/logo.png",
+        qr: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/qr.png",
+        icon1:
+          "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon1.png",
+        icon2:
+          "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon2.png",
+        icon3:
+          "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon3.png",
+        disclaimerImage:
+          "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/bottom.png",
+
+        company: "에스티케이엔지니어링(주)",
+        website: "www.stk-eng.co.kr",
+        fax: "+82 51 000 0000",
+
+        address1:
+          "부산광역시 해운대구 송정중앙로5번길 45 (Postal code : 48071)\n45, Songjeongjungang-ro 5beon-gil, Haeundae-gu, Busan, S.Korea",
+        address2:
+          "부산광역시 기장군 장안읍 반룡산단3로 66 (Postal code : 46034)\n66, Ballyongsandan 3-ro, Jangan-eup, Gijang-gun, Busan, S.Korea",
+
+        icon1Text: "Industry\n& Energy",
+        icon2Text: "Marine\n& Offshore",
+        icon3Text: "",
+
+        disclaimer:
+          "상기 메일은 지정된 수신인만을 위한 것이며 부정경쟁 방지 및 영업비밀 보호에 관한 법률을 포함하여 관련 법령에 따라 보호의 대상이 되는 영업 비밀, 산업기술 등을 포함하고 있을 수 있습니다. 본 문서에 포함된 정보의 전부 또는 일부를 무단으로 제3자에게 공개, 배포, 복사 또는 사용하는 것은 엄격히 금지 됩니다. 본 메일이 잘못 전송된 경우, 발신인에게 알려 주시고 즉시 삭제하여 주시기 바랍니다.\n\nThe above message is intended solely for the named addressee and may contain trade secret, industrial technology or privileged and confidential information otherwise protected under applicable law including the Unfair Competition Prevention and Trade Secret Protection Act. Any unauthorized dissemination, distribution, copying or use of the information contained in this communication is strictly prohibited. If you have received this communication in error, please notify the sender by email and delete this communication immediately.",
+      };
+
+      const fields = {
+        name: document.getElementById("name"),
+        depart: document.getElementById("depart"),
+        title: document.getElementById("title"),
+        mobile: document.getElementById("mobile"),
+        phone: document.getElementById("phone"),
+        email: document.getElementById("email"),
+      };
+      const titlePicker = document.getElementById("titlePicker");
+
+      const preview = document.getElementById("signaturePreview");
+      const status = document.getElementById("status");
+      const templateButtons = Array.from(
+        document.querySelectorAll("[data-template]"),
+      );
+      let signatureVariant = "type1";
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function normalizeUrl(url) {
+        const trimmed = (url || "").trim();
+        if (!trimmed) return "";
+        if (/^https?:\/\//i.test(trimmed) || /^mailto:/i.test(trimmed)) {
+          return trimmed;
+        }
+        return "https://" + trimmed;
+      }
+
+      function getData() {
+        return Object.fromEntries(
+          Object.entries(fields).map(([key, el]) => [key, el.value.trim()]),
+        );
+      }
+
+      function buildIconBlock(iconUrl, iconTextHtml, s) {
+        if (!iconUrl && !iconTextHtml) return "&nbsp;";
+
+        const iconCell = iconUrl
+          ? `<td style="width:${s(90)}px; padding-right:${s(
+              4,
+            )}px; vertical-align:middle;">
+               <img src="${escapeHtml(
+                 iconUrl,
+               )}" alt="" width="${s(90)}" style="display:block; width:${s(
+                 90,
+               )}px; height:auto; max-width:${s(90)}px; border:0;">
+             </td>`
+          : "";
+
+        const textCell = iconTextHtml
+          ? `<td style="vertical-align:middle; width:100%; font-size:${s(
+              15,
+            )}px; font-weight:700; color:#4f5f79; line-height:1.15; white-space:nowrap;">
+               ${iconTextHtml}
+             </td>`
+          : "";
+
+        return `
+          <table cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse;">
+            <tr>
+              ${iconCell}${textCell}
+            </tr>
+          </table>
+        `.trim();
+      }
+
+      function buildSignatureHtml(data, variant = "type1") {
+        const emailHref = data.email ? "mailto:" + data.email : "";
+        const websiteUrl = normalizeUrl(FIXED.website);
+        const SCALE = 249 / 340;
+        const s = (value) => Math.max(1, Math.round(value * SCALE));
+        const isType2 = variant === "type2";
+        const labels = isType2
+          ? { mobile: "Mob.", phone: "Dir.", fax: "Fax.", email: "Email." }
+          : { mobile: "M.", phone: "T.", fax: "F.", email: "E." };
+        const labelWidth = isType2 ? s(40) : s(28);
+        const labelPad = isType2 ? s(6) : s(10);
+        const contactFontSize = s(16);
+        const contactLineHeight = 1.2;
+        const rowGap = s(6);
+        const showMobile = true;
+        const metaLine = [data.depart, data.title].filter(Boolean).join(" | ");
+        const faxValue = (FIXED.fax || "").trim();
+        const nameHtml = (() => {
+          const raw = (data.name || "").trim();
+          if (!raw) return "";
+
+          const ls = "0.5em";
+
+          if (/^[A-Za-z][A-Za-z .'-]*$/.test(raw)) {
+            return escapeHtml(raw);
+          }
+
+          if (/\s/.test(raw)) {
+            const parts = raw.split(/\s+/).filter(Boolean);
+            if (parts.length <= 1) {
+              return `<span style="letter-spacing:${ls};">${escapeHtml(
+                raw,
+              )}</span>`;
+            }
+
+            const head = parts.slice(0, -1).join(" ");
+            const tail = parts[parts.length - 1];
+            return `<span style="letter-spacing:${ls};">${escapeHtml(
+              head,
+            )}</span><span style="letter-spacing:0;"> ${escapeHtml(
+              tail,
+            )}</span>`;
+          }
+
+          // For typical 3-char Korean names, this creates spacing between the first two chars,
+          // while keeping the last character tight (no extra gap before it).
+          if (raw.length <= 2) {
+            return `<span style="letter-spacing:${ls};">${escapeHtml(
+              raw,
+            )}</span>`;
+          }
+
+          const head = raw.slice(0, -1);
+          const tail = raw.slice(-1);
+          return `<span style="letter-spacing:${ls};">${escapeHtml(
+            head,
+          )}</span><span style="letter-spacing:0;">${escapeHtml(tail)}</span>`;
+        })();
+        const rightTableW = s(835);
+        const rightColGap = s(20);
+        const rightColLeft = s(260);
+        const rightColRight = Math.max(
+          1,
+          rightTableW - rightColLeft - rightColGap,
+        );
+        const disclaimerHtml = escapeHtml(FIXED.disclaimer).replace(
+          /\n/g,
+          "<br>",
+        );
+        const disclaimerImageUrl = FIXED.disclaimerImage || FIXED.background;
+        const disclaimerImageWidth = s(835);
+        const disclaimerBlockHtml = disclaimerImageUrl
+          ? `<table cellpadding="0" cellspacing="0" border="0" style="width:${disclaimerImageWidth}px; border-collapse:collapse;">
+               <tr>
+                 <td style="padding:0;">
+                   <img src="${escapeHtml(
+                     disclaimerImageUrl,
+                   )}" alt="" width="${disclaimerImageWidth}" style="display:block; width:${disclaimerImageWidth}px; max-width:${disclaimerImageWidth}px; height:auto; border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic;">
+                 </td>
+               </tr>
+             </table>`
+          : `<div style="padding:${s(10)}px ${s(
+              14,
+            )}px; font-size:${s(10)}px; line-height:1.3; color:#dad7d4; background:#5d5754;">
+               ${disclaimerHtml}
+             </div>`;
+        const address1Html = escapeHtml(FIXED.address1).replace(/\n/g, "<br>");
+        const address2Html = escapeHtml(FIXED.address2).replace(/\n/g, "<br>");
+        const icon1TextHtml = FIXED.icon1Text
+          ? escapeHtml(FIXED.icon1Text).replace(/\n/g, "<br>")
+          : "";
+        const icon2TextHtml = FIXED.icon2Text
+          ? escapeHtml(FIXED.icon2Text).replace(/\n/g, "<br>")
+          : "";
+        const icon3TextHtml = FIXED.icon3Text
+          ? escapeHtml(FIXED.icon3Text).replace(/\n/g, "<br>")
+          : "";
+
+        return `
+<table cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" width="${s(
+  1080,
+)}"
+  style="background-color:#ffffff; border-collapse:collapse; width:${s(
+    1080,
+  )}px;">
+  <tr>
+    <td bgcolor="#ffffff"
+      style="background-color:#ffffff; padding:0;">
+<table cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" width="${s(
+  1080,
+)}"
+  style="width:${s(
+    1080,
+  )}px; border-collapse:collapse; font-family:Arial, Helvetica, sans-serif; background-color:#ffffff; color:#46597a;">
+        <tr>
+          <td style="width:${s(235)}px; vertical-align:top; padding:${s(
+            20,
+          )}px ${s(18)}px ${s(12)}px ${s(12)}px;">
+            ${
+              FIXED.logo
+                ? `<img src="${escapeHtml(
+                    FIXED.logo,
+                  )}" alt="Company Logo" width="${s(
+                    370,
+                  )}" style="display:block; width:${s(
+                    370,
+                  )}px; height:auto; max-width:${s(370)}px; border:0;">`
+                : ""
+            }
+
+            <table cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:${s(
+              20,
+            )}px; font-size:${s(19)}px; color:#9a9a9a;">
+              <tr>
+                <td style="text-align:left;">
+                  ${escapeHtml(FIXED.company)}
+                </td>
+                <td style="text-align:right;">
+                  <a href="${escapeHtml(
+                    websiteUrl,
+                  )}" style="color:#9a9a9a; text-decoration:none;">
+                    ${escapeHtml(FIXED.website)}
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+
+          <td style="vertical-align:top; padding:${s(18)}px 0 0 ${s(12)}px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="${s(
+              835,
+            )}" style="width:${s(
+              835,
+            )}px; border-collapse:collapse; table-layout:fixed; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+              <colgroup>
+                <col width="${rightColLeft}">
+                <col width="${rightColGap}">
+                <col width="${rightColRight}">
+              </colgroup>
+
+              <tr>
+                <td colspan="3" style="padding:0 0 ${s(
+                  10,
+                )}px 0; overflow:hidden;">
+                  <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <span style="font-size:${s(
+                      20,
+                    )}px; font-weight:bold; color:#222; white-space:nowrap; padding-right: 5px">
+                      ${nameHtml}
+                    </span>
+                    ${
+                      metaLine
+                        ? `<span style="color:#666; font-size:${s(
+                            16,
+                          )}px; white-space:nowrap;">${escapeHtml(metaLine)}</span>`
+                        : ""
+                    }
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td width="${rightColLeft}" style="vertical-align:top; width:${rightColLeft}px; overflow:hidden; mso-width-source:userset;">
+                  <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; font-size:${contactFontSize}px; color:#5a6475; line-height:${contactLineHeight};">
+                    ${
+                      data.mobile && showMobile
+                        ? `<tr>
+                             <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${rowGap}px 0;">${labels.mobile}</td>
+                             <td style="padding:0 0 ${rowGap}px 0;">${escapeHtml(
+                               data.mobile,
+                             )}</td>
+                           </tr>`
+                        : ""
+                    }
+                    ${
+                      data.phone
+                        ? `<tr>
+                             <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${rowGap}px 0;">${labels.phone}</td>
+                             <td style="padding:0 0 ${rowGap}px 0;">${escapeHtml(
+                               data.phone,
+                             )}</td>
+                           </tr>`
+                        : ""
+                    }
+                    ${
+                      faxValue
+                        ? `<tr>
+                             <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${rowGap}px 0;">${labels.fax}</td>
+                             <td style="padding:0 0 ${rowGap}px 0;">${escapeHtml(
+                               faxValue,
+                             )}</td>
+                           </tr>`
+                        : ""
+                    }
+                    ${
+                      data.email
+                        ? `<tr>
+                             <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px 0 0;">${labels.email}</td>
+                             <td style="padding:0;">
+                               <a href="${escapeHtml(
+                                 emailHref,
+                               )}" style="color:#4f5f79; text-decoration:none;">${escapeHtml(
+                                 data.email,
+                               )}</a>
+                             </td>
+                           </tr>`
+                        : ""
+                    }
+                  </table>
+                </td>
+
+                <td width="800px" style="vertical-align:bottom; mso-width-source:userset;">
+                  <table cellpadding="0" cellspacing="0" border="0" align="left" style="width:${rightColRight}px; border-collapse:collapse; table-layout:fixed; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                    <tr>
+                      <td width="${s(80)}" style="width:${s(
+                        80,
+                      )}px; vertical-align:bottom; text-align:left;">
+                        ${
+                          FIXED.qr
+                            ? `<img src="${escapeHtml(
+                                FIXED.qr,
+                              )}" alt="QR Code" width="${s(
+                                70,
+                              )}" style="display:block; width:${s(
+                                70,
+                              )}px; height:auto; max-width:${s(
+                                70,
+                              )}px; border:0; margin:0;">`
+                            : ""
+                        }
+                      </td>
+
+                      <td width="${s(40)}" style="width:${s(
+                        40,
+                      )}px; font-size:1px; line-height:1px;">
+                        &nbsp;
+                      </td>
+
+                      <td style="vertical-align:bottom;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%" align="left" style="width:100%; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                          <tr>
+                            <td style="width:33.333%; vertical-align:bottom; padding-right:${s(
+                              5,
+                            )}px;">
+                              ${buildIconBlock(FIXED.icon1, icon1TextHtml, s)}
+                            </td>
+                            <td style="width:33.333%; vertical-align:bottom; padding-right:${s(
+                              3,
+                            )}px;">
+                              ${buildIconBlock(FIXED.icon2, icon2TextHtml, s)}
+                            </td>
+                            <td style="width:33.333%; vertical-align:bottom;">
+                              ${buildIconBlock(FIXED.icon3, icon3TextHtml, s)}
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <table cellpadding="0" cellspacing="0" border="0" style="width:${s(
+              835,
+            )}px; border-collapse:collapse; margin-top:${s(8)}px;">
+              <tr>
+                <td>
+                  <div style="border-top:1px solid #cfd3da; font-size:1px; line-height:1px;">&nbsp;</div>
+                </td>
+              </tr>
+            </table>
+
+            <table cellpadding="0" cellspacing="0" border="0" style="width:${s(
+              800,
+            )}px; margin-bottom:${s(5)}px; border-collapse:collapse; font-size:${s(
+              12,
+            )}px; color:#8c8c8c; margin-top:${s(8)}px;">
+              <tr>
+                <td style="vertical-align:top; text-align:left; padding-left:${s(
+                  5,
+                )}px; line-height:1.3; padding-right: 40px;">
+                  <span style="color:#9a9a9a; display:block; margin-bottom:${s(
+                    3,
+                  )}px;">Office.
+                  ${address1Html}</span>
+                </td>
+
+                <td style="vertical-align:top; text-align:left; line-height:1.3;">
+                  <span style="color:#9a9a9a; display:block; margin-bottom:${s(
+                    3,
+                  )}px;">Factory.
+                  ${address2Html}
+                  </span>
+                </td>
+              </tr>
+            </table>
+
+            <table cellpadding="0" cellspacing="0" border="0" style="width:${s(
+              835,
+            )}px; border-collapse:collapse;">
+              <tr>
+                <td style="padding:0;">
+                  ${disclaimerBlockHtml}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>`.trim();
+      }
+
+      function renderPreview() {
+        const data = getData();
+        preview.innerHTML = buildSignatureHtml(data, signatureVariant);
+        status.textContent = "";
+        status.className = "status";
+
+        if (titlePicker) {
+          const t = (fields.title.value || "").trim();
+          const hasOption = Array.from(titlePicker.options).some(
+            (opt) => opt.value === t,
+          );
+          titlePicker.value = hasOption ? t : "";
+        }
+      }
+
+      async function copyRichHtml() {
+        const html = buildSignatureHtml(getData(), signatureVariant);
+        const plainText = preview.innerText || preview.textContent || "";
+
+        if (navigator.clipboard && window.ClipboardItem) {
+          const item = new ClipboardItem({
+            "text/html": new Blob([html], { type: "text/html" }),
+            "text/plain": new Blob([plainText], { type: "text/plain" }),
+          });
+          await navigator.clipboard.write([item]);
+          return true;
+        }
+
+        const range = document.createRange();
+        range.selectNode(preview);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        const ok = document.execCommand("copy");
+        selection.removeAllRanges();
+        return ok;
+      }
+
+      function setStatus(message, ok = true) {
+        status.textContent = message;
+        status.className = ok ? "status ok" : "status err";
+      }
+
+      Object.values(fields).forEach((el) => {
+        el.addEventListener("input", renderPreview);
+      });
+
+      if (titlePicker) {
+        titlePicker.addEventListener("change", () => {
+          if (titlePicker.value) {
+            fields.title.value = titlePicker.value;
+          }
+          renderPreview();
+        });
+      }
+
+      templateButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          signatureVariant = btn.dataset.template || "type1";
+          templateButtons.forEach((el) => {
+            const active = el === btn;
+            el.classList.toggle("active", active);
+            el.setAttribute("aria-pressed", active ? "true" : "false");
+          });
+          renderPreview();
+        });
+      });
+
+      document
+        .getElementById("copySignatureBtn")
+        .addEventListener("click", async () => {
+          try {
+            const ok = await copyRichHtml();
+            if (!ok) throw new Error("copy failed");
+            setStatus(
+              "서명이 복사되었습니다. Outlook 서명 편집창에 붙여넣으세요.",
+            );
+          } catch (error) {
+            setStatus("복사에 실패했습니다. 다시 시도해 주세요.", false);
+          }
+        });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        Object.entries(defaults).forEach(([key, value]) => {
+          fields[key].value = value;
+        });
+        renderPreview();
+        setStatus("기본값으로 초기화했습니다.");
+      });
+
+      renderPreview();
+    </script>
+  </body>
+</html>
