@@ -74,7 +74,7 @@
         color: #374151;
       }
 
-      input,
+      input:not([type="checkbox"]),
       select {
         width: 100%;
         padding: 10px 12px;
@@ -84,10 +84,94 @@
         background: #fff;
       }
 
-      input:focus,
+      input:not([type="checkbox"]):focus,
       select:focus {
         border-color: #2c3a74;
         box-shadow: 0 0 0 3px rgba(44, 58, 116, 0.12);
+      }
+
+      input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: #1f3a6b;
+        flex: none;
+      }
+
+      .field-note {
+        margin: 0;
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .contact-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 2px 0 10px;
+      }
+
+      .contact-summary strong {
+        color: #1f3a6b;
+        font-size: 12px;
+      }
+
+      .contact-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .contact-item {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .contact-item[hidden] {
+        display: none !important;
+      }
+
+      .contact-choice {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #374151;
+        cursor: pointer;
+      }
+
+      .contact-label {
+        line-height: 1.2;
+      }
+
+      .contact-item.inactive .contact-label {
+        color: #9ca3af;
+      }
+
+      .contact-item.readonly-item .contact-label {
+        color: #6b7280;
+      }
+
+      .contact-value:disabled {
+        background: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      .contact-value[readonly] {
+        background: #f3f4f6;
+        color: #6b7280;
+        border-color: #d1d5db;
+      }
+
+      .contact-value[readonly]:focus {
+        border-color: #d1d5db;
+        box-shadow: none;
       }
 
       .actions {
@@ -185,6 +269,10 @@
         .layout {
           grid-template-columns: 1fr;
         }
+
+        .contact-item {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -192,8 +280,8 @@
     <div class="app">
       <h1 id="appHeading">전자 서명 생성</h1>
       <p class="sub" id="appSubtitle">
-        이름, 부서, 직함, 연락처를 입력하면 오른쪽 미리보기가 바뀌고 서명 복사
-        버튼으로 Outlook 서명 편집창에 붙여넣을 수 있습니다.
+        이름, 부서, 직함과 연락처 항목을 입력하면 오른쪽 미리보기가 바뀌고 서명
+        복사 버튼으로 Outlook 서명 편집창에 붙여넣을 수 있습니다.
       </p>
 
       <div class="layout">
@@ -238,18 +326,104 @@
             </div>
 
             <div class="field full">
-              <label for="mobile">휴대폰</label>
-              <input id="mobile" value="010-1234-5678" />
-            </div>
+              <label>연락처</label>
+              <div class="contact-summary">
+                <p class="field-note" id="contactSummaryNote">
+                  휴대폰, 대표번호, 팩스, 이메일 4개 항목
+                </p>
+                <strong id="contactSelectionCount">0/4 선택</strong>
+              </div>
+              <div class="contact-list">
+                <div class="contact-item" data-contact-item="mobile">
+                  <label class="contact-choice" for="contact-mobile-enabled">
+                    <input
+                      id="contact-mobile-enabled"
+                      type="checkbox"
+                      data-contact-toggle="mobile"
+                      checked
+                    />
+                    <span class="contact-label" data-contact-label="mobile">
+                      M.
+                    </span>
+                  </label>
+                  <input class="contact-value" id="mobile" value="010 1234 5678" />
+                </div>
 
-            <div class="field full">
-              <label for="phone">대표번호</label>
-              <input id="phone" value="+82 00 000 0000" />
-            </div>
+                <div
+                  class="contact-item readonly-item"
+                  data-contact-item="mainPhone"
+                >
+                  <label class="contact-choice" for="contact-mainPhone-enabled">
+                    <input
+                      id="contact-mainPhone-enabled"
+                      type="checkbox"
+                      data-contact-toggle="mainPhone"
+                      checked
+                    />
+                    <span class="contact-label" data-contact-label="mainPhone">
+                      T.
+                    </span>
+                  </label>
+                  <input
+                    class="contact-value"
+                    id="mainPhone"
+                    value="+82 (0)51 0000 1179"
+                    readonly
+                  />
+                </div>
 
-            <div class="field full">
-              <label for="email">이메일</label>
-              <input id="email" value="name@example.com" />
+                <div class="contact-item" data-contact-item="directPhone" hidden>
+                  <label class="contact-choice" for="contact-directPhone-enabled">
+                    <input
+                      id="contact-directPhone-enabled"
+                      type="checkbox"
+                      data-contact-toggle="directPhone"
+                    />
+                    <span class="contact-label" data-contact-label="directPhone">
+                      D.
+                    </span>
+                  </label>
+                  <input
+                    class="contact-value"
+                    id="directPhone"
+                    value="+82 (0)70 5118 3990"
+                  />
+                </div>
+
+                <div class="contact-item readonly-item" data-contact-item="fax">
+                  <label class="contact-choice" for="contact-fax-enabled">
+                    <input
+                      id="contact-fax-enabled"
+                      type="checkbox"
+                      data-contact-toggle="fax"
+                    />
+                    <span class="contact-label" data-contact-label="fax">
+                      F.
+                    </span>
+                  </label>
+                  <input
+                    class="contact-value"
+                    id="fax"
+                    value="+82 (0)51 980 0565"
+                    readonly
+                  />
+                </div>
+
+                <div class="contact-item" data-contact-item="email">
+                  <label class="contact-choice" for="contact-email-enabled">
+                    <input
+                      id="contact-email-enabled"
+                      type="checkbox"
+                      data-contact-toggle="email"
+                      checked
+                    />
+                    <span class="contact-label" data-contact-label="email">
+                      E.
+                    </span>
+                  </label>
+                  <input class="contact-value" id="email" value="stk@stk-eng.com" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -279,10 +453,7 @@
 
           <div id="status" class="status"></div>
 
-          <p class="hint" id="appHint">
-            회사 정보, 주소, 이미지 URL 같은 고정값은 이 HTML 파일 안에 포함되어
-            있습니다.
-          </p>
+          <p class="hint" id="appHint"> </p>
         </section>
 
         <section class="panel">
@@ -303,8 +474,8 @@
         documentTitle: "에스티케이엔지니어링(주) 전자 서명 생성기",
         heading: "에스티케이엔지니어링(주) 전자 서명 생성",
         subtitle:
-          "이름, 부서, 직함, 연락처를 입력하면 오른쪽 미리보기가 바뀌고 서명 복사 버튼으로 Outlook 서명 편집창에 붙여넣을 수 있습니다.",
-        hint: "회사 정보, 주소, 이미지 URL 같은 고정값은 이 HTML 파일 안에 포함되어 있습니다.",
+          "이름, 부서, 직함과 연락처 항목을 입력하면 오른쪽 미리보기가 바뀌고 서명 복사 버튼으로 Outlook 서명 편집창에 붙여넣을 수 있습니다.",
+        hint: "회사 정보, 주소, 로컬 이미지 경로 같은 고정값은 이 HTML 파일 안에 포함되어 있습니다.",
       };
 
       const departmentOptions = [
@@ -313,30 +484,79 @@
         "Engineering",
         "Factory&Material Management",
         "IT/ISO",
-        "Service Coordination",
         "Stucke Tech",
       ];
 
       const defaults = {
         name: "홍길동",
         depart: "IT/ISO",
-        title: "Senior Manager",
-        mobile: "010-1234-5678",
-        phone: "+82 51 000 1179",
-        email: "hong@stk-eng.com",
+        title: "Staff",
+        mobile: "+82 (0)51 0000 1179",
+        mainPhone: "+82 (0)51 714 1179",
+        directPhone: "+82 (0)70 5118 3990",
+        fax: "+82 (0)51 980 0565",
+        email: "stk@stk-eng.com",
       };
+      const NUMBER_CONTACT_KEYS = new Set([
+        "mobile",
+        "mainPhone",
+        "directPhone",
+        "fax",
+      ]);
+      const MAX_CONTACT_SELECTIONS = 4;
+      const defaultSelectedContacts = ["mobile", "mainPhone", "email"];
+      const CONTACT_FIELDS = [
+        {
+          key: "mobile",
+          label: "휴대폰",
+          shortLabel: "M.",
+          longLabel: "Mob.",
+        },
+        {
+          key: "mainPhone",
+          label: "대표번호",
+          shortLabel: "T.",
+          longLabel: "Tel.",
+        },
+        {
+          key: "directPhone",
+          label: "직통번호",
+          shortLabel: "D.",
+          longLabel: "Dir.",
+        },
+        {
+          key: "fax",
+          label: "팩스",
+          shortLabel: "F.",
+          longLabel: "Fax.",
+        },
+        {
+          key: "email",
+          label: "이메일",
+          shortLabel: "E.",
+          longLabel: "Email.",
+          hrefPrefix: "mailto:",
+        },
+      ];
+
+      function resolveAssetUrl(url) {
+        const trimmed = (url || "").trim();
+        if (!trimmed) return "";
+        if (/^(https?:\/\/|mailto:|data:|blob:|file:)/i.test(trimmed)) {
+          return trimmed;
+        }
+        return new URL(trimmed, window.location.href).href;
+      }
 
       const FIXED = {
-        logo: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/logo.png",
-        qr: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/qr.png",
-        icon1: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon1.png",
-        icon2: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon2.png",
-        icon3: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon3.png",
-        disclaimerImage:
-          "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/bottom.png",
+        logo: resolveAssetUrl("img/logo.png"),
+        qr: resolveAssetUrl("img/qr.png"),
+        icon1: resolveAssetUrl("img/icon1.png"),
+        icon2: resolveAssetUrl("img/icon2.png"),
+        icon3: resolveAssetUrl("img/icon3.png"),
+        disclaimerImage: resolveAssetUrl("img/bottom.png"),
         company: "에스티케이엔지니어링(주)",
         website: "www.stk-eng.co.kr",
-        fax: "+82 51 000 0000",
         address1:
           "부산광역시 해운대구 송정중앙로5번길 45 (Postal code : 48071)\n45, Songjeongjungang-ro 5beon-gil, Haeundae-gu, Busan, S.Korea",
         address2:
@@ -358,17 +578,42 @@
         depart: document.getElementById("depart"),
         title: document.getElementById("title"),
         mobile: document.getElementById("mobile"),
-        phone: document.getElementById("phone"),
+        mainPhone: document.getElementById("mainPhone"),
+        directPhone: document.getElementById("directPhone"),
+        fax: document.getElementById("fax"),
         email: document.getElementById("email"),
       };
+      const contactToggles = Object.fromEntries(
+        CONTACT_FIELDS.map(({ key }) => [
+          key,
+          document.querySelector(`[data-contact-toggle="${key}"]`),
+        ]),
+      );
+      const contactItems = Object.fromEntries(
+        CONTACT_FIELDS.map(({ key }) => [
+          key,
+          document.querySelector(`[data-contact-item="${key}"]`),
+        ]),
+      );
+      const contactLabelEls = Object.fromEntries(
+        CONTACT_FIELDS.map(({ key }) => [
+          key,
+          document.querySelector(`[data-contact-label="${key}"]`),
+        ]),
+      );
       const titlePicker = document.getElementById("titlePicker");
       const departOptions = document.getElementById("departOptions");
       const preview = document.getElementById("signaturePreview");
       const status = document.getElementById("status");
+      const contactSummaryNote = document.getElementById("contactSummaryNote");
+      const contactSelectionCount = document.getElementById(
+        "contactSelectionCount",
+      );
       const templateButtons = Array.from(
         document.querySelectorAll("[data-template]"),
       );
       let signatureVariant = "type1";
+      const imageDataUrlCache = new Map();
 
       function escapeHtml(value) {
         return String(value || "")
@@ -388,6 +633,88 @@
         return "https://" + trimmed;
       }
 
+      function normalizeContactValue(key, value) {
+        const trimmed = String(value || "").trim();
+        if (!NUMBER_CONTACT_KEYS.has(key)) return trimmed;
+        return trimmed.replace(/-/g, " ").replace(/\s+/g, " ");
+      }
+
+      function isContactAvailable(key, variant = signatureVariant) {
+        if (key === "directPhone") return variant === "type2";
+        return true;
+      }
+
+      function getAvailableContactFields(variant = signatureVariant) {
+        return CONTACT_FIELDS.filter(({ key }) => isContactAvailable(key, variant));
+      }
+
+      function getImageMimeType(url) {
+        const lowered = (url || "").toLowerCase();
+        if (lowered.endsWith(".jpg") || lowered.endsWith(".jpeg")) {
+          return "image/jpeg";
+        }
+        if (lowered.endsWith(".gif")) return "image/gif";
+        if (lowered.endsWith(".svg")) return "image/svg+xml";
+        if (lowered.endsWith(".webp")) return "image/webp";
+        return "image/png";
+      }
+
+      async function imageUrlToDataUrl(url) {
+        const resolvedUrl = resolveAssetUrl(url);
+        if (!resolvedUrl || /^data:/i.test(resolvedUrl)) return resolvedUrl;
+
+        if (!imageDataUrlCache.has(resolvedUrl)) {
+          imageDataUrlCache.set(
+            resolvedUrl,
+            new Promise((resolve) => {
+              const img = new Image();
+
+              img.onload = () => {
+                try {
+                  const canvas = document.createElement("canvas");
+                  canvas.width = img.naturalWidth || img.width;
+                  canvas.height = img.naturalHeight || img.height;
+
+                  const ctx = canvas.getContext("2d");
+                  if (!ctx) {
+                    resolve(resolvedUrl);
+                    return;
+                  }
+
+                  ctx.drawImage(img, 0, 0);
+                  resolve(canvas.toDataURL(getImageMimeType(resolvedUrl)));
+                } catch (error) {
+                  resolve(resolvedUrl);
+                }
+              };
+
+              img.onerror = () => resolve(resolvedUrl);
+              img.src = resolvedUrl;
+            }),
+          );
+        }
+
+        return imageDataUrlCache.get(resolvedUrl);
+      }
+
+      async function buildClipboardHtml(data, variant = "type1") {
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = buildSignatureHtml(data, variant);
+
+        const images = Array.from(wrapper.querySelectorAll("img"));
+        await Promise.all(
+          images.map(async (img) => {
+            const src = img.getAttribute("src");
+            const inlinedSrc = await imageUrlToDataUrl(src);
+            if (inlinedSrc) {
+              img.setAttribute("src", inlinedSrc);
+            }
+          }),
+        );
+
+        return wrapper.innerHTML.trim();
+      }
+
       function renderDepartmentOptions() {
         const options = departmentOptions.map((value) => {
           const option = document.createElement("option");
@@ -400,15 +727,85 @@
       function applyDefaults() {
         Object.entries(defaults).forEach(([key, value]) => {
           if (fields[key]) {
-            fields[key].value = value;
+            fields[key].value = normalizeContactValue(key, value);
+          }
+        });
+
+        CONTACT_FIELDS.forEach(({ key }) => {
+          if (contactToggles[key]) {
+            contactToggles[key].checked =
+              defaultSelectedContacts.includes(key) ||
+              (key === "directPhone" && signatureVariant === "type2");
+          }
+        });
+
+        updateContactControls();
+      }
+
+      function getData() {
+        return {
+          ...Object.fromEntries(
+            Object.entries(fields).map(([key, el]) => [
+              key,
+              normalizeContactValue(key, el.value),
+            ]),
+          ),
+          activeContacts: getAvailableContactFields().filter(
+            ({ key }) => contactToggles[key] && contactToggles[key].checked,
+          ).map(({ key }) => key),
+        };
+      }
+
+      function updateContactControls() {
+        const availableContactFields = getAvailableContactFields();
+        const selectedCount = availableContactFields.filter(
+          ({ key }) => contactToggles[key] && contactToggles[key].checked,
+        ).length;
+        const limitReached = selectedCount >= MAX_CONTACT_SELECTIONS;
+
+        if (contactSummaryNote) {
+          contactSummaryNote.textContent =
+            signatureVariant === "type2"
+              ? "휴대폰, 대표번호, 직통번호, 팩스, 이메일 중 최대 4개 선택"
+              : "휴대폰, 대표번호, 팩스, 이메일 4개 항목";
+        }
+
+        if (contactSelectionCount) {
+          contactSelectionCount.textContent = `${selectedCount}/${MAX_CONTACT_SELECTIONS} 선택`;
+        }
+
+        CONTACT_FIELDS.forEach(({ key }) => {
+          const toggle = contactToggles[key];
+          const input = fields[key];
+          const item = contactItems[key];
+          const isAvailable = isContactAvailable(key);
+          const isSelected = isAvailable && !!toggle?.checked;
+
+          if (input) {
+            input.disabled = !isSelected;
+          }
+
+          if (item) {
+            item.hidden = !isAvailable;
+            item.classList.toggle("inactive", !isSelected);
+          }
+
+          if (toggle) {
+            toggle.disabled = !isAvailable || (!isSelected && limitReached);
           }
         });
       }
 
-      function getData() {
-        return Object.fromEntries(
-          Object.entries(fields).map(([key, el]) => [key, el.value.trim()]),
-        );
+      function renderContactFieldLabels() {
+        const useLongLabel = signatureVariant === "type2";
+
+        CONTACT_FIELDS.forEach(({ key, shortLabel, longLabel }) => {
+          if (contactLabelEls[key]) {
+            contactLabelEls[key].textContent = useLongLabel
+              ? longLabel
+              : shortLabel;
+          }
+        });
       }
 
       function buildIconBlock(iconUrl, iconTextHtml, s) {
@@ -444,22 +841,42 @@
       }
 
       function buildSignatureHtml(data, variant = "type1") {
-        const emailHref = data.email ? "mailto:" + data.email : "";
         const websiteUrl = normalizeUrl(FIXED.website);
         const SCALE = 249 / 340;
         const s = (value) => Math.max(1, Math.round(value * SCALE));
         const isType2 = variant === "type2";
-        const labels = isType2
-          ? { mobile: "Mob.", phone: "Dir.", fax: "Fax.", email: "Email." }
-          : { mobile: "M.", phone: "T.", fax: "F.", email: "E." };
-        const labelWidth = isType2 ? s(40) : s(28);
+        const labelWidth = isType2 ? s(44) : s(28);
         const labelPad = isType2 ? s(6) : s(10);
-        const contactFontSize = s(16);
         const contactLineHeight = 1.2;
-        const rowGap = s(6);
-        const showMobile = true;
         const metaLine = [data.depart, data.title].filter(Boolean).join(" | ");
-        const faxValue = (FIXED.fax || "").trim();
+        const renderedContacts = CONTACT_FIELDS.filter(({ key }) =>
+          (data.activeContacts || []).includes(key),
+        )
+          .map((meta) => ({
+            ...meta,
+            value: (data[meta.key] || "").trim(),
+          }))
+          .filter(({ value }) => value);
+        const contactFontSize = s(renderedContacts.length === 3 ? 19 : 16);
+        const rowGap = s(renderedContacts.length === 3 ? 9 : 6);
+        const contactRowsHtml = renderedContacts
+          .map((contact, index) => {
+            const label = isType2 ? contact.longLabel : contact.shortLabel;
+            const bottomPad = index === renderedContacts.length - 1 ? 0 : rowGap;
+            const valueHtml = contact.hrefPrefix
+              ? `<a href="${escapeHtml(
+                  `${contact.hrefPrefix}${contact.value}`,
+                )}" style="color:#4f5f79; text-decoration:none;">${escapeHtml(
+                  contact.value,
+                )}</a>`
+              : escapeHtml(contact.value);
+
+            return `<tr>
+                      <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${bottomPad}px 0;">${label}</td>
+                      <td style="padding:0 0 ${bottomPad}px 0;">${valueHtml}</td>
+                    </tr>`;
+          })
+          .join("");
         const nameHtml = (() => {
           const raw = (data.name || "").trim();
           if (!raw) return "";
@@ -625,50 +1042,7 @@
               <tr>
                 <td width="${rightColLeft}" style="vertical-align:top; width:${rightColLeft}px; overflow:hidden; mso-width-source:userset;">
                   <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; font-size:${contactFontSize}px; color:#5a6475; line-height:${contactLineHeight};">
-                    ${
-                      data.mobile && showMobile
-                        ? `<tr>
-                             <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${rowGap}px 0;">${labels.mobile}</td>
-                             <td style="padding:0 0 ${rowGap}px 0;">${escapeHtml(
-                               data.mobile,
-                             )}</td>
-                           </tr>`
-                        : ""
-                    }
-                    ${
-                      data.phone
-                        ? `<tr>
-                             <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${rowGap}px 0;">${labels.phone}</td>
-                             <td style="padding:0 0 ${rowGap}px 0;">${escapeHtml(
-                               data.phone,
-                             )}</td>
-                           </tr>`
-                        : ""
-                    }
-                    ${
-                      faxValue
-                        ? `<tr>
-                             <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${rowGap}px 0;">${labels.fax}</td>
-                             <td style="padding:0 0 ${rowGap}px 0;">${escapeHtml(
-                               faxValue,
-                             )}</td>
-                           </tr>`
-                        : ""
-                    }
-                    ${
-                      data.email
-                        ? `<tr>
-                             <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px 0 0;">${labels.email}</td>
-                             <td style="padding:0;">
-                               <a href="${escapeHtml(
-                                 emailHref,
-                               )}" style="color:#4f5f79; text-decoration:none;">${escapeHtml(
-                                 data.email,
-                               )}</a>
-                             </td>
-                           </tr>`
-                        : ""
-                    }
+                    ${contactRowsHtml}
                   </table>
                 </td>
 
@@ -777,7 +1151,9 @@
       }
 
       function renderPreview() {
+        updateContactControls();
         const data = getData();
+        renderContactFieldLabels();
         preview.innerHTML = buildSignatureHtml(data, signatureVariant);
         status.textContent = "";
         status.className = "status";
@@ -792,7 +1168,7 @@
       }
 
       async function copyRichHtml() {
-        const html = buildSignatureHtml(getData(), signatureVariant);
+        const html = await buildClipboardHtml(getData(), signatureVariant);
         const plainText = preview.innerText || preview.textContent || "";
 
         if (navigator.clipboard && window.ClipboardItem) {
@@ -804,13 +1180,22 @@
           return true;
         }
 
+        const temp = document.createElement("div");
+        temp.setAttribute("aria-hidden", "true");
+        temp.style.position = "fixed";
+        temp.style.left = "-99999px";
+        temp.style.top = "0";
+        temp.innerHTML = html;
+        document.body.appendChild(temp);
+
         const range = document.createRange();
-        range.selectNode(preview);
+        range.selectNode(temp);
         const selection = window.getSelection();
         selection.removeAllRanges();
         selection.addRange(range);
         const ok = document.execCommand("copy");
         selection.removeAllRanges();
+        temp.remove();
         return ok;
       }
 
@@ -822,8 +1207,24 @@
       renderDepartmentOptions();
       applyDefaults();
 
-      Object.values(fields).forEach((el) => {
-        el.addEventListener("input", renderPreview);
+      Object.entries(fields).forEach(([key, el]) => {
+        el.addEventListener("input", () => {
+          const normalizedValue = normalizeContactValue(key, el.value);
+          if (el.value !== normalizedValue) {
+            el.value = normalizedValue;
+          }
+          renderPreview();
+        });
+      });
+
+      CONTACT_FIELDS.forEach(({ key }) => {
+        const toggle = contactToggles[key];
+        if (!toggle) return;
+
+        toggle.addEventListener("change", () => {
+          updateContactControls();
+          renderPreview();
+        });
       });
 
       if (titlePicker) {
@@ -837,7 +1238,31 @@
 
       templateButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
-          signatureVariant = btn.dataset.template || "type1";
+          const nextVariant = btn.dataset.template || "type1";
+
+          if (nextVariant === "type1" && contactToggles.directPhone) {
+            contactToggles.directPhone.checked = false;
+          }
+
+          if (
+            nextVariant === "type2" &&
+            contactToggles.directPhone &&
+            !contactToggles.directPhone.checked
+          ) {
+            const selectedCount = CONTACT_FIELDS.filter(
+              ({ key }) =>
+                key !== "directPhone" &&
+                isContactAvailable(key, nextVariant) &&
+                contactToggles[key] &&
+                contactToggles[key].checked,
+            ).length;
+
+            if (selectedCount < MAX_CONTACT_SELECTIONS) {
+              contactToggles.directPhone.checked = true;
+            }
+          }
+
+          signatureVariant = nextVariant;
           templateButtons.forEach((el) => {
             const active = el === btn;
             el.classList.toggle("active", active);
