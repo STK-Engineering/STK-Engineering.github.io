@@ -280,8 +280,8 @@
           <div id="status" class="status"></div>
 
           <p class="hint" id="appHint">
-            회사 정보, 주소, 이미지 URL 같은 고정값은 외부 설정 파일에서 불러올
-            수 있습니다.
+            회사 정보, 주소, 이미지 URL 같은 고정값은 이 HTML 파일 안에 포함되어
+            있습니다.
           </p>
         </section>
 
@@ -298,70 +298,55 @@
       </div>
     </div>
 
-    <script src="./mail.config.js"></script>
     <script>
-      const PUBLIC_APP_TEXT = {
-        documentTitle: "전자 서명 생성기",
-        heading: "전자 서명 생성",
+      const appText = {
+        documentTitle: "에스티케이엔지니어링(주) 전자 서명 생성기",
+        heading: "에스티케이엔지니어링(주) 전자 서명 생성",
         subtitle:
           "이름, 부서, 직함, 연락처를 입력하면 오른쪽 미리보기가 바뀌고 서명 복사 버튼으로 Outlook 서명 편집창에 붙여넣을 수 있습니다.",
-        hint: "회사 정보, 주소, 이미지 URL 같은 고정값은 외부 설정 파일에서 불러올 수 있습니다.",
+        hint: "회사 정보, 주소, 이미지 URL 같은 고정값은 이 HTML 파일 안에 포함되어 있습니다.",
       };
 
-      const PUBLIC_DEPARTMENT_OPTIONS = [
-        "Sales",
-        "Accounting",
+      const departmentOptions = [
+        "Part Sales",
+        "Accounting/Affairs",
         "Engineering",
-        "Operations",
-        "IT",
+        "Factory&Material Management",
+        "IT/ISO",
+        "Service Coordination",
+        "Stucke Tech",
       ];
 
-      const PUBLIC_DEFAULTS = {
+      const defaults = {
         name: "홍길동",
-        depart: "Engineering",
+        depart: "IT/ISO",
         title: "Senior Manager",
         mobile: "010-1234-5678",
-        phone: "+82 00 000 0000",
-        email: "name@example.com",
+        phone: "+82 51 000 1179",
+        email: "hong@stk-eng.com",
       };
 
-      const PUBLIC_FIXED = {
-        logo: "",
-        qr: "",
-        icon1: "",
-        icon2: "",
-        icon3: "",
-        disclaimerImage: "",
-        company: "Company Name",
-        website: "www.example.com",
-        fax: "+82 00 000 0000",
-        address1: "Office address line 1\nOffice address line 2",
-        address2: "Factory address line 1\nFactory address line 2",
+      const FIXED = {
+        logo: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/logo.png",
+        qr: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/qr.png",
+        icon1: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon1.png",
+        icon2: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon2.png",
+        icon3: "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/icon3.png",
+        disclaimerImage:
+          "https://stk-homepage.s3.ap-northeast-2.amazonaws.com/mail/bottom.png",
+        company: "에스티케이엔지니어링(주)",
+        website: "www.stk-eng.co.kr",
+        fax: "+82 51 000 0000",
+        address1:
+          "부산광역시 해운대구 송정중앙로5번길 45 (Postal code : 48071)\n45, Songjeongjungang-ro 5beon-gil, Haeundae-gu, Busan, S.Korea",
+        address2:
+          "부산광역시 기장군 장안읍 반룡산단3로 66 (Postal code : 46034)\n66, Ballyongsandan 3-ro, Jangan-eup, Gijang-gun, Busan, S.Korea",
         icon1Text: "Industry\n& Energy",
         icon2Text: "Marine\n& Offshore",
         icon3Text: "",
         disclaimer:
-          "This email and any attachments may contain confidential information intended only for the named recipient. If you received it by mistake, please notify the sender and delete it immediately.",
+          "상기 메일은 지정된 수신인만을 위한 것이며 부정경쟁 방지 및 영업비밀 보호에 관한 법률을 포함하여 관련 법령에 따라 보호의 대상이 되는 영업 비밀, 산업기술 등을 포함하고 있을 수 있습니다. 본 문서에 포함된 정보의 전부 또는 일부를 무단으로 제3자에게 공개, 배포, 복사 또는 사용하는 것은 엄격히 금지 됩니다. 본 메일이 잘못 전송된 경우, 발신인에게 알려 주시고 즉시 삭제하여 주시기 바랍니다.\n\nThe above message is intended solely for the named addressee and may contain trade secret, industrial technology or privileged and confidential information otherwise protected under applicable law including the Unfair Competition Prevention and Trade Secret Protection Act. Any unauthorized dissemination, distribution, copying or use of the information contained in this communication is strictly prohibited. If you have received this communication in error, please notify the sender by email and delete this communication immediately.",
       };
-
-      const runtimeConfig = window.MAIL_CONFIG || {};
-      const appText = {
-        ...PUBLIC_APP_TEXT,
-        ...(runtimeConfig.appText || {}),
-      };
-      const defaults = {
-        ...PUBLIC_DEFAULTS,
-        ...(runtimeConfig.defaults || {}),
-      };
-      const FIXED = {
-        ...PUBLIC_FIXED,
-        ...(runtimeConfig.fixed || {}),
-      };
-      const departmentOptions =
-        Array.isArray(runtimeConfig.departmentOptions) &&
-        runtimeConfig.departmentOptions.length
-          ? runtimeConfig.departmentOptions
-          : PUBLIC_DEPARTMENT_OPTIONS;
 
       document.title = appText.documentTitle;
       document.getElementById("appHeading").textContent = appText.heading;
