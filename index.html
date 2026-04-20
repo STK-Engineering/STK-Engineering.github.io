@@ -845,8 +845,8 @@
         const SCALE = 249 / 340;
         const s = (value) => Math.max(1, Math.round(value * SCALE));
         const isType2 = variant === "type2";
-        const labelWidth = isType2 ? s(44) : s(28);
-        const labelPad = isType2 ? s(6) : s(10);
+        const labelWidth = isType2 ? s(58) : s(28);
+        const labelPad = isType2 ? s(8) : s(10);
         const contactLineHeight = 1.2;
         const metaLine = [data.depart, data.title].filter(Boolean).join(" | ");
         const renderedContacts = CONTACT_FIELDS.filter(({ key }) =>
@@ -872,8 +872,8 @@
               : escapeHtml(contact.value);
 
             return `<tr>
-                      <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${bottomPad}px 0;">${label}</td>
-                      <td style="padding:0 0 ${bottomPad}px 0;">${valueHtml}</td>
+                      <td style="width:${labelWidth}px; font-weight:700; color:#3b3a71; padding:0 ${labelPad}px ${bottomPad}px 0; white-space:nowrap;">${label}</td>
+                      <td style="padding:0 0 ${bottomPad}px 0; white-space:nowrap;">${valueHtml}</td>
                     </tr>`;
           })
           .join("");
