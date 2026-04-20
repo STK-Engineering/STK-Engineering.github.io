@@ -923,6 +923,11 @@
           1,
           rightTableW - rightColLeft - rightColGap,
         );
+        const addressColGap = s(20);
+        const addressColWidth = Math.max(
+          1,
+          Math.floor((rightTableW - addressColGap) / 2),
+        );
         const logoWidth = s(370);
         const outerLeftColWidth = logoWidth;
         const outerTableWidth =
@@ -948,8 +953,8 @@
             )}px; font-size:${s(10)}px; line-height:1.3; color:#dad7d4; background:#5d5754;">
                ${disclaimerHtml}
              </div>`;
-        const address1Html = escapeHtml(FIXED.address1).replace(/\n/g, " / ");
-        const address2Html = escapeHtml(FIXED.address2).replace(/\n/g, " / ");
+        const address1Html = escapeHtml(FIXED.address1).replace(/\n/g, "<br>");
+        const address2Html = escapeHtml(FIXED.address2).replace(/\n/g, "<br>");
         const icon1TextHtml = FIXED.icon1Text
           ? escapeHtml(FIXED.icon1Text).replace(/\n/g, "<br>")
           : "";
@@ -961,16 +966,12 @@
           : "";
 
         return `
-<table cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" width="${s(
-          outerTableWidth,
-        )}"
+<table cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" width="${outerTableWidth}"
   style="background-color:#ffffff; border-collapse:collapse; width:${outerTableWidth}px; min-width:${outerTableWidth}px; max-width:none; white-space:nowrap; word-break:keep-all;">
   <tr>
     <td bgcolor="#ffffff"
       style="background-color:#ffffff; padding:0;">
-<table cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" width="${s(
-          outerTableWidth,
-        )}"
+<table cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" width="${outerTableWidth}"
   style="width:${outerTableWidth}px; min-width:${outerTableWidth}px; max-width:none; border-collapse:collapse; font-family:Arial, Helvetica, sans-serif; background-color:#ffffff; color:#46597a; white-space:nowrap; word-break:keep-all;">
         <tr>
           <td width="${outerLeftColWidth}" style="width:${outerLeftColWidth}px; min-width:${outerLeftColWidth}px; vertical-align:top; padding:${s(
@@ -1003,9 +1004,7 @@
           </td>
 
           <td width="${rightTableW}" style="width:${rightTableW}px; min-width:${rightTableW}px; vertical-align:top; padding:${s(18)}px 0 0 ${s(12)}px;">
-            <table cellpadding="0" cellspacing="0" border="0" width="${s(
-              835,
-            )}" style="width:${rightTableW}px; min-width:${rightTableW}px; max-width:none; border-collapse:collapse; table-layout:fixed; mso-table-lspace:0pt; mso-table-rspace:0pt; white-space:nowrap;">
+            <table cellpadding="0" cellspacing="0" border="0" width="${rightTableW}" style="width:${rightTableW}px; min-width:${rightTableW}px; max-width:none; border-collapse:collapse; table-layout:fixed; mso-table-lspace:0pt; mso-table-rspace:0pt; white-space:nowrap;">
               <colgroup>
                 <col width="${rightColLeft}">
                 <col width="${rightColGap}">
@@ -1104,24 +1103,25 @@
 
             <table cellpadding="0" cellspacing="0" border="0" width="${rightTableW}" style="width:${rightTableW}px; min-width:${rightTableW}px; margin-bottom:${s(5)}px; border-collapse:collapse; font-size:${s(
               12,
-            )}px; max-width:none; color:#8c8c8c; margin-top:${s(8)}px; white-space:nowrap;">
+            )}px; max-width:none; color:#8c8c8c; margin-top:${s(8)}px; table-layout:fixed;">
               <tr>
-                <td style="vertical-align:top; text-align:left; padding-left:${s(
+                <td width="${addressColWidth}" style="width:${addressColWidth}px; min-width:${addressColWidth}px; vertical-align:top; text-align:left; padding-left:${s(
                   5,
-                )}px; line-height:1.3; white-space:nowrap;">
+                )}px; padding-right:${s(8)}px; line-height:1.25; white-space:normal; word-break:keep-all;">
                   <span style="color:#9a9a9a; display:block; margin-bottom:${s(
                     3,
-                  )}px; white-space:nowrap;">Office.
+                  )}px; white-space:normal; word-break:keep-all;">Office.
                   ${address1Html}</span>
                 </td>
-              </tr>
-              <tr>
-                <td style="vertical-align:top; text-align:left; padding-left:${s(
+                <td width="${addressColGap}" style="width:${addressColGap}px; min-width:${addressColGap}px; font-size:1px; line-height:1px;">
+                  &nbsp;
+                </td>
+                <td width="${addressColWidth}" style="width:${addressColWidth}px; min-width:${addressColWidth}px; vertical-align:top; text-align:left; padding-left:${s(
                   5,
-                )}px; line-height:1.3; padding-top:${s(2)}px; white-space:nowrap;">
+                )}px; line-height:1.25; white-space:normal; word-break:keep-all;">
                   <span style="color:#9a9a9a; display:block; margin-bottom:${s(
                     3,
-                  )}px; white-space:nowrap;">Factory.
+                  )}px; white-space:normal; word-break:keep-all;">Factory.
                   ${address2Html}
                   </span>
                 </td>
