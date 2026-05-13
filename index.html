@@ -811,17 +811,23 @@
       function buildIconBlock(iconUrl, iconTextHtml, s) {
         if (!iconUrl && !iconTextHtml) return "&nbsp;";
 
+        const renderPngWithVml = (src, width, height, alt = "") => {
+          const safeSrc = escapeHtml(src || "");
+          const safeAlt = escapeHtml(alt || "");
+          return `<!--[if gte mso 9]>
+<v:shape xmlns:v="urn:schemas-microsoft-com:vml" type="#_x0000_t75" style="width:${width}px;height:${height}px;" stroked="f" fill="t">
+  <v:imagedata src="${safeSrc}"/>
+</v:shape>
+<![endif]--><!--[if !mso]><!-- -->
+<img src="${safeSrc}" alt="${safeAlt}" width="${width}" height="${height}" style="display:block; width:${width}px; min-width:${width}px; height:${height}px; max-width:none; border:0;">
+<!--<![endif]-->`;
+        };
+
         const iconCell = iconUrl
           ? `<td style="width:${s(90)}px; min-width:${s(90)}px; padding-right:${s(
               4,
             )}px; vertical-align:middle;">
-               <img src="${escapeHtml(
-                 iconUrl,
-               )}" alt="" width="${s(90)}" height="${s(
-                 90,
-               )}" style="display:block; width:${s(90)}px; min-width:${s(
-                 90,
-               )}px; height:${s(90)}px; max-width:none; border:0;">
+               ${renderPngWithVml(iconUrl, s(90), s(90))}
              </td>`
           : "";
 
@@ -846,6 +852,17 @@
         const websiteUrl = normalizeUrl(FIXED.website);
         const SCALE = 0.63;
         const s = (value) => Math.max(1, Math.round(value * SCALE));
+        const renderPngWithVml = (src, width, height, alt = "") => {
+          const safeSrc = escapeHtml(src || "");
+          const safeAlt = escapeHtml(alt || "");
+          return `<!--[if gte mso 9]>
+<v:shape xmlns:v="urn:schemas-microsoft-com:vml" type="#_x0000_t75" style="width:${width}px;height:${height}px;" stroked="f" fill="t">
+  <v:imagedata src="${safeSrc}"/>
+</v:shape>
+<![endif]--><!--[if !mso]><!-- -->
+<img src="${safeSrc}" alt="${safeAlt}" width="${width}" height="${height}" style="display:block; width:${width}px; min-width:${width}px; height:${height}px; max-width:none; border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic;">
+<!--<![endif]-->`;
+        };
         const isType2 = variant === "type2";
         const labelWidth = isType2 ? s(58) : s(28);
         const labelPad = isType2 ? s(8) : s(10);
@@ -940,13 +957,11 @@
           ? `<table cellpadding="0" cellspacing="0" border="0" style="width:${disclaimerImageWidth}px; min-width:${disclaimerImageWidth}px; max-width:none; border-collapse:collapse; white-space:nowrap;">
                <tr>
                  <td style="padding:0;">
-                   <img src="${escapeHtml(
+                   ${renderPngWithVml(
                      disclaimerImageUrl,
-                   )}" alt="" width="${disclaimerImageWidth}" height="${s(
-                     100,
-                   )}" style="display:block; width:${disclaimerImageWidth}px; min-width:${disclaimerImageWidth}px; max-width:none; height:${s(
-                     100,
-                   )}px; border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic;">
+                     disclaimerImageWidth,
+                     s(100),
+                   )}
                  </td>
                </tr>
              </table>`
@@ -981,26 +996,23 @@
           )}px ${s(18)}px ${s(12)}px ${s(12)}px;">
             ${
               FIXED.logo
-                ? `<img src="${escapeHtml(
-                    FIXED.logo,
-                  )}" alt="Company Logo" width="${logoWidth}" height="${s(
-                    213,
-                  )}" style="display:block; width:${logoWidth}px; min-width:${logoWidth}px; height:${s(
-                    213,
-                  )}px; max-width:none; border:0;">`
+                ? renderPngWithVml(FIXED.logo, logoWidth, s(213), "Company Logo")
                 : ""
             }
 
             <table cellpadding="0" cellspacing="0" border="0" width="${logoWidth}" style="width:${logoWidth}px; min-width:${logoWidth}px; margin-top:${s(
               20,
-            )}px; font-size:${s(19)}px; color:#9a9a9a; white-space:nowrap;">
+            )}px; font-size:${s(17)}px; color:#9a9a9a; white-space:nowrap;">
               <tr>
                 <td style="text-align:left; white-space:nowrap;">
-                  <span>${escapeHtml(FIXED.company)}</span><span style="display:inline-block; width:${s(
-                    10,
-                  )}px;">&nbsp;</span><a href="${escapeHtml(
+                  ${escapeHtml(FIXED.company)}
+                </td>
+                <td style="text-align:left; white-space:nowrap; padding-left:${s(
+                  8,
+                )}px;">
+                  <a href="${escapeHtml(
                     websiteUrl,
-                  )}" style="color:#9a9a9a; text-decoration:none;">${escapeHtml(
+                  )}" style="color:#9a9a9a; text-decoration:none; white-space:nowrap;">${escapeHtml(
                     FIXED.website,
                   )}</a>
                 </td>
@@ -1047,15 +1059,7 @@
                       )}px; min-width:${s(70)}px; vertical-align:bottom; text-align:left;">
                         ${
                           FIXED.qr
-                            ? `<img src="${escapeHtml(
-                                FIXED.qr,
-                              )}" alt="QR Code" width="${s(70)}" height="${s(
-                                72,
-                              )}" style="display:block; width:${s(
-                                70,
-                              )}px; min-width:${s(70)}px; height:${s(
-                                72,
-                              )}px; max-width:none; border:0; margin:0;">`
+                            ? renderPngWithVml(FIXED.qr, s(70), s(72), "QR Code")
                             : ""
                         }
                       </td>
